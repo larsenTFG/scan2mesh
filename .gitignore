@@ -40,3 +40,6 @@ Thumbs.db
 
 # Test fixtures — large binary files (not committed)
 tests/fixtures/
+
+# Web viewer — WIP, kept local only
+web/
