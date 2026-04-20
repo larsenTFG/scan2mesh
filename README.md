@@ -27,6 +27,8 @@ pip install -e ".[e57]"
 
 ## Usage
 
+Sample E57 files are available in [`examples/`](examples/) to try out the tool.
+
 ```bash
 # Visualization (default)
 scan2mesh input.las output.glb
