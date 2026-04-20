@@ -1,0 +1,31 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "scan2mesh"
+version = "0.1.0"
+description = "Convert lidar point clouds to mesh for visualization and precision measurement"
+requires-python = ">=3.10"
+dependencies = [
+    "click>=8.0",
+    "numpy>=1.24,<2",
+    "open3d>=0.18",
+    "laspy[lazrs]>=2.5",
+    "trimesh>=4.0",
+    "pygltflib>=1.16",
+]
+
+[project.optional-dependencies]
+e57 = ["pye57>=0.4"]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov",
+]
+all = ["scan2mesh[e57,dev]"]
+
+[project.scripts]
+scan2mesh = "scan2mesh.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/scan2mesh"]
