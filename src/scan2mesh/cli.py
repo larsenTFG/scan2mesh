@@ -86,6 +86,16 @@ def main():
     help="Enable or disable vertex color transfer (default: on for visualization, off for precision).",
 )
 @click.option(
+    "--bpa-radii",
+    type=str,
+    default=None,
+    help=(
+        "Comma-separated Ball Pivoting radii as multiples of point spacing "
+        "(e.g. '1,2,4,8' for more coverage across scan gaps). Default: '1,2,4'. "
+        "Each extra radius is another BPA pass — more coverage, more time."
+    ),
+)
+@click.option(
     "--no-outlier-removal",
     is_flag=True,
     default=False,
@@ -114,6 +124,7 @@ def convert_cmd(
     voxel_size: float | None,
     poisson_depth: int | None,
     color: bool | None,
+    bpa_radii: str | None,
     no_outlier_removal: bool,
     scans: str | None,
     verbose: bool,
@@ -152,6 +163,13 @@ def convert_cmd(
         config.poisson_depth = poisson_depth
     if color is not None:
         config.transfer_colors = color
+    if bpa_radii is not None:
+        try:
+            config.bpa_radius_multiples = [float(x) for x in bpa_radii.split(",") if x.strip()]
+        except ValueError:
+            raise click.BadParameter("--bpa-radii must be comma-separated numbers, e.g. '1,2,4,8'")
+        if not config.bpa_radius_multiples:
+            raise click.BadParameter("--bpa-radii must contain at least one value")
     if no_outlier_removal:
         config.skip_outlier_removal = True
 
@@ -187,6 +205,11 @@ def convert_cmd(
             bar.__exit__(None, None, None)
         click.echo(f"Error: {e}", err=True)
         sys.exit(1)
+    except (KeyboardInterrupt, SystemExit):
+        if bar is not None:
+            bar.__exit__(None, None, None)
+        click.echo("\nAborted.", err=True)
+        raise
 
 
 @main.command()

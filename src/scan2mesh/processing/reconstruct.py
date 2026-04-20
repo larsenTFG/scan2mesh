@@ -57,9 +57,17 @@ def _ball_pivoting(pcd: o3d.geometry.PointCloud, config: PipelineConfig) -> o3d.
     if config.ball_pivot_radii is not None:
         radii = config.ball_pivot_radii
     else:
-        # Auto-compute radii from point spacing: 1x, 2x, 4x average NN distance
-        nn_dist = np.mean(pcd.compute_nearest_neighbor_distance())
-        radii = [nn_dist * m for m in (1.0, 2.0, 4.0)]
+        # Reuse precomputed spacing instead of full-cloud NN.
+        spacing = config.point_spacing
+        if spacing is None or spacing <= 0:
+            spacing = float(np.mean(pcd.compute_nearest_neighbor_distance()))
+        # Multi-radius is required for anisotropic scanner data:
+        #   - 1.0x catches dense along-scanline triangles
+        #   - 2.0x bridges small scanline-to-scanline gaps
+        #   - 4.0x closes larger gaps at scan edges / low-incidence regions
+        # Without the larger radii, BPA leaves visible scanline striping.
+        multiples = config.bpa_radius_multiples or (1.0, 2.0, 4.0)
+        radii = [spacing * m for m in multiples]
 
     logger.info(f"Running Ball Pivoting (radii={[f'{r:.4f}' for r in radii]})")
 
