@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "scan2mesh"
 version = "0.1.0"
 description = "Convert lidar point clouds to mesh for visualization and precision measurement"
-requires-python = ">=3.10"
+requires-python = ">=3.10,<3.13"
 dependencies = [
     "click>=8.0",
     "numpy>=1.24,<2",

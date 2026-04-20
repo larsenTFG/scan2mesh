@@ -15,6 +15,9 @@ faithful) workflows.
 
 ## Installation
 
+**Requires Python 3.10 – 3.12.** Open3D does not yet ship wheels for Python
+3.13, and numpy is pinned to `<2` for Open3D ABI compatibility.
+
 ```bash
 git clone https://github.com/larsenTFG/scan2mesh.git
 cd scan2mesh
